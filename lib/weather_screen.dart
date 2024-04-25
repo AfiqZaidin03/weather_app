@@ -47,7 +47,7 @@ class WeatherScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            '300°F',
+                            '300K',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -86,18 +86,38 @@ class WeatherScreen extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  HourlyForecastItem(),
-                  HourlyForecastItem(),
-                  HourlyForecastItem(),
-                  HourlyForecastItem(),
-                  HourlyForecastItem(),
+                  HourlyForecastItem(
+                    icon: Icons.cloud,
+                    time: '03:00',
+                    temperature: '301.22',
+                  ),
+                  HourlyForecastItem(
+                    icon: Icons.sunny,
+                    time: '05:00',
+                    temperature: '275.12',
+                  ),
+                  HourlyForecastItem(
+                    icon: Icons.sunny_snowing,
+                    time: '07:00',
+                    temperature: '300.12',
+                  ),
+                  HourlyForecastItem(
+                    icon: Icons.cloud,
+                    time: '09:00',
+                    temperature: '304.12',
+                  ),
+                  HourlyForecastItem(
+                    icon: Icons.cloud,
+                    time: '12:00',
+                    temperature: '320.12',
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
             // additional information
             const Text(
-              'Additional Forecast',
+              'Additional Information',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -107,9 +127,21 @@ class WeatherScreen extends StatelessWidget {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                AdditionalInfoItem(),
-                AdditionalInfoItem(),
-                AdditionalInfoItem(),
+                AdditionalInfoItem(
+                  icon: Icons.water_drop,
+                  label: 'Humidity',
+                  value: '94',
+                ),
+                AdditionalInfoItem(
+                  icon: Icons.air,
+                  label: 'Wind Speed',
+                  value: '7.5',
+                ),
+                AdditionalInfoItem(
+                  icon: Icons.beach_access,
+                  label: 'Pressure',
+                  value: '1000',
+                ),
               ],
             )
           ],
