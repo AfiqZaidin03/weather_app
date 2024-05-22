@@ -6,12 +6,14 @@ class WeatherModel {
   final double currentPressure;
   final double currentWindSpeed;
   final double currentHumidity;
+  final List<HourlyForecast> hourlyForecast;
   WeatherModel({
     required this.currentTemp,
     required this.currentSky,
     required this.currentPressure,
     required this.currentWindSpeed,
     required this.currentHumidity,
+    required this.hourlyForecast,
   });
 
   WeatherModel copyWith({
@@ -20,6 +22,7 @@ class WeatherModel {
     double? currentPressure,
     double? currentWindSpeed,
     double? currentHumidity,
+    List<HourlyForecast>? hourlyForecast,
   }) {
     return WeatherModel(
       currentTemp: currentTemp ?? this.currentTemp,
@@ -27,6 +30,7 @@ class WeatherModel {
       currentPressure: currentPressure ?? this.currentPressure,
       currentWindSpeed: currentWindSpeed ?? this.currentWindSpeed,
       currentHumidity: currentHumidity ?? this.currentHumidity,
+      hourlyForecast: hourlyForecast ?? this.hourlyForecast,
     );
   }
 
@@ -37,18 +41,27 @@ class WeatherModel {
       'currentPressure': currentPressure,
       'currentWindSpeed': currentWindSpeed,
       'currentHumidity': currentHumidity,
+      'hourlyForecast': hourlyForecast.map((x) => x.toMap()).toList(),
     };
   }
 
   factory WeatherModel.fromMap(Map<String, dynamic> map) {
     final currentWeatherData = map['list'][0];
+    final hourlyForecast = (map['list'] as List).skip(1).map((forecast) {
+      return HourlyForecast(
+        time: DateTime.parse(forecast['dt_txt']),
+        temperature: forecast['main']['temp'].toDouble(),
+        weather: forecast['weather'][0]['main'],
+      );
+    }).toList();
 
     return WeatherModel(
-      currentTemp: currentWeatherData['main']['temp'],
+      currentTemp: currentWeatherData['main']['temp'].toDouble(),
       currentSky: currentWeatherData['weather'][0]['main'],
-      currentPressure: currentWeatherData['main']['pressure'],
-      currentWindSpeed: currentWeatherData['wind']['speed'],
-      currentHumidity: currentWeatherData['main']['humidity'],
+      currentPressure: currentWeatherData['main']['pressure'].toDouble(),
+      currentWindSpeed: currentWeatherData['wind']['speed'].toDouble(),
+      currentHumidity: currentWeatherData['main']['humidity'].toDouble(),
+      hourlyForecast: hourlyForecast,
     );
   }
 
@@ -59,7 +72,7 @@ class WeatherModel {
 
   @override
   String toString() {
-    return 'WeatherModel(currentTemp: $currentTemp, currentSky: $currentSky, currentPressure: $currentPressure, currentWindSpeed: $currentWindSpeed, currentHumidity: $currentHumidity)';
+    return 'WeatherModel(currentTemp: $currentTemp, currentSky: $currentSky, currentPressure: $currentPressure, currentWindSpeed: $currentWindSpeed, currentHumidity: $currentHumidity, hourlyForecast: $hourlyForecast)';
   }
 
   @override
@@ -71,7 +84,8 @@ class WeatherModel {
         other.currentSky == currentSky &&
         other.currentPressure == currentPressure &&
         other.currentWindSpeed == currentWindSpeed &&
-        other.currentHumidity == currentHumidity;
+        other.currentHumidity == currentHumidity &&
+        other.hourlyForecast == hourlyForecast;
   }
 
   @override
@@ -80,6 +94,72 @@ class WeatherModel {
         currentSky.hashCode ^
         currentPressure.hashCode ^
         currentWindSpeed.hashCode ^
-        currentHumidity.hashCode;
+        currentHumidity.hashCode ^
+        hourlyForecast.hashCode;
+  }
+}
+
+class HourlyForecast {
+  final DateTime time;
+  final double temperature;
+  final String weather;
+
+  HourlyForecast({
+    required this.time,
+    required this.temperature,
+    required this.weather,
+  });
+
+  HourlyForecast copyWith({
+    DateTime? time,
+    double? temperature,
+    String? weather,
+  }) {
+    return HourlyForecast(
+      time: time ?? this.time,
+      temperature: temperature ?? this.temperature,
+      weather: weather ?? this.weather,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'time': time.toIso8601String(),
+      'temperature': temperature,
+      'weather': weather,
+    };
+  }
+
+  factory HourlyForecast.fromMap(Map<String, dynamic> map) {
+    return HourlyForecast(
+      time: DateTime.parse(map['dt_txt']),
+      temperature: map['main']['temp'].toDouble(),
+      weather: map['weather'][0]['main'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory HourlyForecast.fromJson(String source) =>
+      HourlyForecast.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'HourlyForecast(time: $time, temperature: $temperature, weather: $weather)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is HourlyForecast &&
+        other.time == time &&
+        other.temperature == temperature &&
+        other.weather == weather;
+  }
+
+  @override
+  int get hashCode {
+    return time.hashCode ^ temperature.hashCode ^ weather.hashCode;
   }
 }
